@@ -75,6 +75,12 @@
           <span id="streak-header-num">1 Ngày Streak</span>
         </button>
 
+        <!-- Spaced Repetition (SRS) Due Header Badge -->
+        <button onclick="setFilterQuick('srs_due')" id="btn-srs-header" class="flex items-center space-x-1.5 bg-indigo-900/90 hover:bg-indigo-800 px-2.5 sm:px-3 py-1.5 rounded-xl border border-indigo-700/80 text-indigo-200 font-bold text-xs transition cursor-pointer shadow-sm active:scale-95" title="Bấm để ôn tập các từ đến hạn Lặp Lại Ngắt Quãng (Spaced Repetition)">
+          <span>🧠</span>
+          <span id="srs-header-count">SRS: 0 đến hạn</span>
+        </button>
+
         <!-- Quick Audio Setting -->
         <button onclick="toggleAutoPronounce()" id="btn-audio-toggle" class="text-xs bg-indigo-900/90 hover:bg-indigo-800 px-3 py-1.5 rounded-xl border border-indigo-700/80 text-indigo-200 font-medium transition flex items-center space-x-1.5" title="Bật/Tắt tự động phát âm khi đổi thẻ">
           <span>🔊</span>
@@ -102,8 +108,11 @@
       </div>
             <!-- 1-Click Task Pills (Mobile) -->
       <div class="flex items-center space-x-1.5 overflow-x-auto pb-1 text-[11px] font-bold">
-        <button onclick="setFilterQuick('today_plan')" class="px-2.5 py-1 bg-indigo-600 text-white rounded-lg shrink-0 shadow-sm flex items-center space-x-1">
-          <span>📅</span><span>20 từ/ngày</span>
+        <button onclick="setFilterQuick('today_plan')" class="px-2.5 py-1 bg-indigo-600 text-white rounded-lg shrink-0 shadow-sm flex items-center space-x-1" title="Mục tiêu 20 từ: 14 từ vựng + 3 idioms + 3 collocations">
+          <span>📅</span><span>20 từ (14+3+3)</span>
+        </button>
+        <button onclick="setFilterQuick('srs_due')" class="px-2.5 py-1 bg-purple-600 text-white rounded-lg shrink-0 shadow-sm flex items-center space-x-1" title="Lặp lại ngắt quãng (Spaced Repetition)">
+          <span>🧠</span><span>SRS (<span id="mobile-srs-cnt">0</span>)</span>
         </button>
         <button onclick="setFilterQuick('today_review')" class="px-2.5 py-1 bg-amber-500 text-white rounded-lg shrink-0 shadow-sm flex items-center space-x-1">
           <span>🔁</span><span>Ôn hôm nay (<span id="mobile-today-cnt">0</span>)</span>
@@ -220,30 +229,52 @@
         </div>
       </div>
 
-      <!-- 2.5 STREAK & MỤC TIÊU 20 TỪ / NGÀY -->
+      <!-- 2.5 DEADLINE HẰNG NGÀY & LẶP LẠI NGẮT QUÃNG (SRS) -->
       <div class="bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-indigo-950/20 rounded-2xl border border-amber-300/80 p-3.5 space-y-2.5 shadow-sm">
-        <div class="flex items-center justify-between">
+        
+        <!-- Header: Deadline & Streak -->
+        <div class="flex items-center justify-between pb-1 border-b border-amber-200/60">
           <div class="flex items-center space-x-2">
             <span class="text-2xl animate-pulse">🔥</span>
             <div>
-              <p class="text-xs font-extrabold text-slate-800">Chuỗi Ngày Học (Streak)</p>
-              <p id="sidebar-streak-desc" class="text-[11px] font-bold text-amber-700">1 ngày liên tiếp</p>
+              <p class="text-xs font-black text-slate-800">Streak: <span id="sidebar-streak-desc" class="text-amber-700">1 ngày</span></p>
+              <p class="text-[10px] text-rose-600 font-bold flex items-center space-x-1">
+                <span>⏰</span><span>Hạn chót: <strong>23:59 hôm nay</strong></span>
+              </p>
             </div>
           </div>
-          <button onclick="openStreakModal()" class="text-[11px] bg-amber-100 hover:bg-amber-200 text-amber-900 px-2 py-0.5 rounded-lg font-bold transition">
+          <button onclick="openStreakModal()" class="text-[10px] bg-amber-100 hover:bg-amber-200 text-amber-900 px-2 py-0.5 rounded-lg font-bold transition">
             Chi tiết ❯
           </button>
         </div>
 
-        <!-- Mục tiêu 20 từ hôm nay -->
-        <div class="bg-white/95 p-2.5 rounded-xl border border-amber-200/70 space-y-1.5">
+        <!-- Chi tiết nhiệm vụ ngày: 14 Từ + 3 Idioms + 3 Collocations -->
+        <div class="bg-white/95 p-2.5 rounded-xl border border-amber-200/70 space-y-2">
           <div class="flex items-center justify-between text-xs font-bold">
-            <span class="text-slate-700">🎯 Mục tiêu hôm nay:</span>
+            <span class="text-slate-800">🎯 Mục tiêu ngày: 20 từ</span>
             <span id="sidebar-daily-badge" class="px-2 py-0.5 bg-amber-100 text-amber-900 rounded-md text-[11px]">0 / 20 từ</span>
           </div>
+
           <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
             <div id="sidebar-daily-progress" class="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
           </div>
+
+          <!-- Phân rã mục tiêu chuẩn -->
+          <div class="grid grid-cols-3 gap-1 text-[10px] text-center font-bold">
+            <div class="bg-blue-50 text-blue-800 p-1 rounded-lg border border-blue-200">
+              <p class="text-[9px] text-blue-600 font-semibold">📖 Từ vựng</p>
+              <p id="dl-vocab-count">0 / 14</p>
+            </div>
+            <div class="bg-purple-50 text-purple-800 p-1 rounded-lg border border-purple-200">
+              <p class="text-[9px] text-purple-600 font-semibold">💎 Idiom</p>
+              <p id="dl-idiom-count">0 / 3</p>
+            </div>
+            <div class="bg-indigo-50 text-indigo-800 p-1 rounded-lg border border-indigo-200">
+              <p class="text-[9px] text-indigo-600 font-semibold">🔗 Colloc</p>
+              <p id="dl-colloc-count">0 / 3</p>
+            </div>
+          </div>
+
           <div class="flex items-center justify-between text-[11px] pt-0.5">
             <span class="text-slate-500">Lộ trình: <strong id="sidebar-day-label" class="text-indigo-700">Ngày 1</strong></span>
             <div class="flex items-center space-x-1">
@@ -253,15 +284,22 @@
           </div>
         </div>
 
-        <!-- 2 Nút tác vụ nhanh: Học 20 từ & Ôn hôm nay -->
-        <div class="grid grid-cols-2 gap-2 text-xs font-bold">
-          <button onclick="setFilterQuick('today_plan')" class="p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-center shadow-sm transition active:scale-95 flex items-center justify-center space-x-1">
-            <span>📅</span><span>Học 20 từ</span>
+        <!-- 3 Nút tác vụ nhanh: Học 20 từ, Ôn ngắt quãng SRS & Ôn hôm nay -->
+        <div class="space-y-1.5 text-xs font-bold">
+          <button onclick="setFilterQuick('today_plan')" class="w-full p-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-center shadow-sm transition active:scale-95 flex items-center justify-center space-x-1.5">
+            <span>📅</span><span>Học 20 từ hôm nay (14 Từ + 3 Id + 3 Col)</span>
           </button>
-          <button onclick="setFilterQuick('today_review')" class="p-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-center shadow-sm transition active:scale-95 flex items-center justify-center space-x-1">
-            <span>🔁</span><span>Ôn từ hôm nay (<span id="sidebar-today-cnt">0</span>)</span>
-          </button>
+          
+          <div class="grid grid-cols-2 gap-1.5">
+            <button onclick="setFilterQuick('srs_due')" class="p-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-center shadow-sm transition active:scale-95 flex items-center justify-center space-x-1">
+              <span>🧠</span><span>SRS (<span id="sidebar-srs-cnt">0</span> đến hạn)</span>
+            </button>
+            <button onclick="setFilterQuick('today_review')" class="p-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-center shadow-sm transition active:scale-95 flex items-center justify-center space-x-1">
+              <span>🔁</span><span>Ôn hôm nay (<span id="sidebar-today-cnt">0</span>)</span>
+            </button>
+          </div>
         </div>
+
       </div>
 
       <!-- 3. Study Statistics & Task Progress Widget -->
@@ -52502,9 +52540,10 @@
       const curDay = getCurrentDay();
       const tw = loadTodayWords();
       return `
-        <optgroup label="📅 LỘ TRÌNH THEO NGÀY (MỖI NGÀY 20 TỪ)">
-          <option value="today_plan" selected>📅 Học Ngày Hôm Nay: Ngày ${curDay} (20 từ mục tiêu)</option>
-          <option value="today_review">🔁 ÔN TẬP TỪ ĐÃ HỌC HÔM NAY (${tw.words.length} từ)</option>
+        <optgroup label="📅 DEADLINE HẰNG NGÀY & LẶP LẠI NGẮT QUÃNG (SRS)">
+          <option value="today_plan" selected>📅 Deadline Hôm Nay: Ngày ${curDay} (14 Từ vựng + 3 Idioms + 3 Collocations)</option>
+          <option value="srs_due">🧠 ÔN TẬP NGẮT QUÃNG SRS (${getSrsDueCount()} từ đến hạn hôm nay)</option>
+          <option value="today_review">🔁 Ôn tập các từ đã học hôm nay (${tw.words.length} từ)</option>
           <option value="weak_only">🎯 Chỉ ôn các từ chưa nhớ (Từ yếu / Cần ôn)</option>
         </optgroup>
 
@@ -52715,11 +52754,118 @@
       }
     }
 
-    // ==================== STREAK & DAILY 20-WORD GOAL SYSTEM ====================
+    // ==================== STREAK, DAILY DEADLINE & SPACED REPETITION (SRS) SYSTEM ====================
     const STREAK_KEY = 'sb1_streak_tracker_v3';
     const TODAY_WORDS_KEY = 'sb1_today_learned_words_v3';
     const CURRENT_DAY_KEY = 'sb1_current_study_day_v3';
+    const SRS_KEY = 'sb1_srs_storage_v1';
     const WORDS_PER_DAY = 20;
+
+    // Leitner / SuperMemo Spaced Repetition Intervals (Ngày)
+    const SRS_INTERVALS = {
+      1: 1,   // Cấp 1: Ôn lại sau 1 ngày (Day +1)
+      2: 3,   // Cấp 2: Ôn lại sau 3 ngày (Day +3)
+      3: 7,   // Cấp 3: Ôn lại sau 7 ngày (Day +7)
+      4: 14,  // Cấp 4: Ôn lại sau 14 ngày (Day +14)
+      5: 30   // Cấp 5: Ghi nhớ dài hạn (Day +30)
+    };
+
+    function addDaysToDate(dateStr, days) {
+      const parts = dateStr.split('-');
+      const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      d.setDate(d.getDate() + days);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function loadSrsData() {
+      try {
+        const d = JSON.parse(localStorage.getItem(SRS_KEY));
+        if (d && typeof d === 'object') return d;
+      } catch(e) {}
+      return {};
+    }
+
+    function saveSrsData(data) {
+      try {
+        localStorage.setItem(SRS_KEY, JSON.stringify(data));
+      } catch(e) {}
+    }
+
+    function getSrsDueWords() {
+      const today = getTodayDateStr();
+      const srs = loadSrsData();
+      return VOCAB_DATA.filter(item => {
+        const entry = srs[item.word];
+        return entry && entry.nextReview && entry.nextReview <= today;
+      });
+    }
+
+    function getSrsDueCount() {
+      return getSrsDueWords().length;
+    }
+
+    function updateWordSrs(word, isKnown) {
+      if (!word) return;
+      const srs = loadSrsData();
+      const today = getTodayDateStr();
+      let entry = srs[word] || { level: 0, reps: 0 };
+
+      if (isKnown) {
+        entry.level = Math.min(5, (entry.level || 0) + 1);
+        entry.reps = (entry.reps || 0) + 1;
+        const interval = SRS_INTERVALS[entry.level] || 1;
+        entry.interval = interval;
+        entry.lastReview = today;
+        entry.nextReview = addDaysToDate(today, interval);
+      } else {
+        // Nếu quên, rớt lại Level 1 để ôn lại ngày mai
+        entry.level = 1;
+        entry.interval = 1;
+        entry.lastReview = today;
+        entry.nextReview = addDaysToDate(today, 1);
+      }
+
+      srs[word] = entry;
+      saveSrsData(srs);
+      updateSrsUI();
+    }
+
+    function getWordSrsBadge(word) {
+      const srs = loadSrsData();
+      const entry = srs[word];
+      if (!entry || !entry.level) return "🌱 Mới học";
+      if (entry.level === 1) return "🧠 SRS Cấp 1 (+1 ngày)";
+      if (entry.level === 2) return "🧠 SRS Cấp 2 (+3 ngày)";
+      if (entry.level === 3) return "🧠 SRS Cấp 3 (+7 ngày)";
+      if (entry.level === 4) return "🧠 SRS Cấp 4 (+14 ngày)";
+      return "⭐ Đã nhớ sâu (+30 ngày)";
+    }
+
+    // Helper: Tạo gói học 20 từ cân bằng (14 Từ vựng + 3 Idioms + 3 Collocations)
+    function getBalancedDailyPack(day) {
+      const idioms = VOCAB_DATA.filter(x => x.type === 'idiom');
+      const collocs = VOCAB_DATA.filter(x => x.type === 'collocation');
+      const regulars = VOCAB_DATA.filter(x => x.type !== 'idiom' && x.type !== 'collocation');
+
+      const vStart = (day - 1) * 14;
+      const vSlice = regulars.slice(vStart, vStart + 14);
+
+      // Idioms slice (3 items, circular wrap)
+      const iStart = ((day - 1) * 3) % idioms.length;
+      let iSlice = idioms.slice(iStart, iStart + 3);
+      if (iSlice.length < 3) {
+        iSlice = iSlice.concat(idioms.slice(0, 3 - iSlice.length));
+      }
+
+      // Collocations slice (3 items, circular wrap)
+      const cStart = ((day - 1) * 3) % collocs.length;
+      let cSlice = collocs.slice(cStart, cStart + 3);
+      if (cSlice.length < 3) {
+        cSlice = cSlice.concat(collocs.slice(0, 3 - cSlice.length));
+      }
+
+      return [...vSlice, ...iSlice, ...cSlice];
+    }
 
     function getTodayDateStr() {
       const d = new Date();
@@ -52877,19 +53023,48 @@
     }
 
     function updateStreakUI() {
+      updateSrsUI();
+    }
+
+    function updateSrsUI() {
       const streakData = loadStreakData();
       const tw = loadTodayWords();
       const count = tw.words.length;
       const pct = Math.min(100, Math.round((count / WORDS_PER_DAY) * 100));
       const curDay = getCurrentDay();
+      const srsDue = getSrsDueCount();
 
-      // Header
+      // Count today learned breakdown (Vocab, Idiom, Colloc)
+      let todayVocabCnt = 0;
+      let todayIdiomCnt = 0;
+      let todayCollocCnt = 0;
+      const learnedSet = new Set(tw.words);
+
+      VOCAB_DATA.forEach(item => {
+        if (learnedSet.has(item.word)) {
+          if (item.type === 'idiom') todayIdiomCnt++;
+          else if (item.type === 'collocation') todayCollocCnt++;
+          else todayVocabCnt++;
+        }
+      });
+
+      // Header Badges
       const hTxt = document.getElementById('streak-header-num');
       if (hTxt) hTxt.textContent = `🔥 ${streakData.streak || 1} Ngày Streak`;
 
-      // Sidebar
+      const hSrs = document.getElementById('srs-header-count');
+      if (hSrs) {
+        hSrs.textContent = `SRS: ${srsDue} đến hạn`;
+        if (srsDue > 0) {
+          hSrs.parentElement.className = "flex items-center space-x-1.5 bg-purple-700 hover:bg-purple-600 px-2.5 sm:px-3 py-1.5 rounded-xl border border-purple-400 text-white font-bold text-xs transition cursor-pointer shadow-sm active:scale-95 animate-pulse";
+        } else {
+          hSrs.parentElement.className = "flex items-center space-x-1.5 bg-indigo-900/90 hover:bg-indigo-800 px-2.5 sm:px-3 py-1.5 rounded-xl border border-indigo-700/80 text-indigo-200 font-bold text-xs transition cursor-pointer shadow-sm active:scale-95";
+        }
+      }
+
+      // Sidebar Breakdown
       const sDesc = document.getElementById('sidebar-streak-desc');
-      if (sDesc) sDesc.textContent = `${streakData.streak || 1} ngày liên tiếp`;
+      if (sDesc) sDesc.textContent = `${streakData.streak || 1} ngày`;
 
       const sBadge = document.getElementById('sidebar-daily-badge');
       if (sBadge) sBadge.textContent = `${count} / ${WORDS_PER_DAY} từ`;
@@ -52903,9 +53078,25 @@
       const sCnt = document.getElementById('sidebar-today-cnt');
       if (sCnt) sCnt.textContent = count;
 
-      // Mobile
+      const sSrsCnt = document.getElementById('sidebar-srs-cnt');
+      if (sSrsCnt) sSrsCnt.textContent = srsDue;
+
+      // Deadline checklist
+      const dlV = document.getElementById('dl-vocab-count');
+      if (dlV) dlV.textContent = `${todayVocabCnt} / 14`;
+
+      const dlI = document.getElementById('dl-idiom-count');
+      if (dlI) dlI.textContent = `${todayIdiomCnt} / 3`;
+
+      const dlC = document.getElementById('dl-colloc-count');
+      if (dlC) dlC.textContent = `${todayCollocCnt} / 3`;
+
+      // Mobile pills
       const mCnt = document.getElementById('mobile-today-cnt');
       if (mCnt) mCnt.textContent = count;
+
+      const mSrs = document.getElementById('mobile-srs-cnt');
+      if (mSrs) mSrs.textContent = srsDue;
 
       // Modal
       const mStreak = document.getElementById('modal-streak-count');
@@ -52990,14 +53181,25 @@
       // 1. Determine base pool according to unitVal
       if (unitVal === 'today_plan') {
         const curDay = getCurrentDay();
-        const start = (curDay - 1) * WORDS_PER_DAY;
-        const end = Math.min(start + WORDS_PER_DAY, VOCAB_DATA.length);
-        activeCards = VOCAB_DATA.slice(start, end);
+        activeCards = getBalancedDailyPack(curDay);
 
         if (dayBanner) {
           dayBanner.classList.remove('hidden');
-          document.getElementById('day-banner-title').textContent = `Lộ Trình: Ngày ${curDay} (${activeCards.length} từ mục tiêu)`;
-          document.getElementById('day-banner-sub').textContent = `Từ số ${start + 1} đến ${end} • Hoàn thành để duy trì chuỗi Streak 🔥`;
+          document.getElementById('day-banner-title').textContent = `📅 Deadline Ngày ${curDay}: 20 từ (14 Từ vựng + 3 Idioms + 3 Collocations)`;
+          document.getElementById('day-banner-sub').textContent = `⏰ Hạn chót hôm nay: 23:59 • Hoàn thành để duy trì ngọn lửa Streak 🔥`;
+        }
+      } else if (unitVal === 'srs_due') {
+        activeCards = getSrsDueWords();
+
+        if (dayBanner) {
+          dayBanner.classList.remove('hidden');
+          if (activeCards.length > 0) {
+            document.getElementById('day-banner-title').textContent = `🧠 Lặp Lại Ngắt Quãng SRS: ${activeCards.length} từ đến hạn ôn tập!`;
+            document.getElementById('day-banner-sub').textContent = `Dựa trên đường cong quên lãng Ebbinghaus (1, 3, 7, 14, 30 ngày) giúp bạn nhớ vĩnh viễn!`;
+          } else {
+            document.getElementById('day-banner-title').textContent = `🎉 Hoàn Thành Lịch Ôn Tập Ngắt Quãng (SRS)!`;
+            document.getElementById('day-banner-sub').textContent = `Hôm nay không có từ nào bị trễ hạn. Hãy học 20 từ mới hoặc làm Quiz để tích lũy thêm!`;
+          }
         }
       } else if (unitVal === 'today_review') {
         const tw = loadTodayWords();
@@ -53181,12 +53383,14 @@
       const tagEl = document.getElementById('fc-front-tag');
       const lvl = item.level || 'B1';
       let lvlBadge = `[${lvl}]`;
+      const srsBadge = getWordSrsBadge(item.word);
+
       if (isIdiom) {
         tagEl.className = "px-3 py-1 bg-purple-600 text-white font-extrabold rounded-full uppercase tracking-wider text-xs shadow-sm";
-        tagEl.textContent = `💎 IDIOM • ${lvlBadge}`;
+        tagEl.textContent = `💎 IDIOM • ${lvlBadge} • ${srsBadge}`;
       } else if (isColloc) {
         tagEl.className = "px-3 py-1 bg-indigo-600 text-white font-extrabold rounded-full uppercase tracking-wider text-xs shadow-sm";
-        tagEl.textContent = `🔗 COLLOCATION • ${lvlBadge}`;
+        tagEl.textContent = `🔗 COLLOC • ${lvlBadge} • ${srsBadge}`;
       } else {
         let col = "bg-indigo-50 text-indigo-700";
         if (lvl === 'A2') col = "bg-emerald-50 text-emerald-800 border border-emerald-200";
@@ -53194,7 +53398,7 @@
         else if (lvl === 'B2') col = "bg-purple-50 text-purple-800 border border-purple-200";
         else if (lvl === 'C1' || lvl === 'C2') col = "bg-rose-50 text-rose-800 border border-rose-200";
         tagEl.className = `px-3 py-1 rounded-full uppercase tracking-wider text-xs font-bold ${col}`;
-        tagEl.textContent = `${item.type || 'Từ'} • ${lvlBadge}`;
+        tagEl.textContent = `${item.type || 'Từ'} • ${lvlBadge} • ${srsBadge}`;
       }
 
 
@@ -53313,6 +53517,7 @@
       const currentItem = activeCards[cardIdx];
       const w = currentItem.word;
       recordLearnedWord(w);
+      updateWordSrs(w, isKnown);
 
       if (isKnown) {
         masteredStore.add(w);
@@ -53544,11 +53749,12 @@
       const allBtns = container.querySelectorAll('button');
       allBtns.forEach(b => b.disabled = true);
 
+      const isCorrect = (answerText === correctAnswer);
+
       if (quizTarget && quizTarget.word) {
         recordLearnedWord(quizTarget.word);
+        updateWordSrs(quizTarget.word, isCorrect);
       }
-
-      const isCorrect = (answerText === correctAnswer);
       const msg = document.getElementById('quiz-msg');
 
       if (isCorrect) {
